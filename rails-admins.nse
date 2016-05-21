@@ -30,7 +30,15 @@ local http = require "http"
 local stdnse = require "stdnse"
 
 -- RULE SECTION
-portrule = shortport.http
+portrule = function(host, port)
+  local auth_port = { number=3000, protocol="tcp" }
+  local identd = nmap.get_port_state(host, auth_port)
+
+  return identd ~= nil
+    and identd.state == "open"
+    and port.protocol == "tcp"
+    and port.state == "open"
+end
 
 -- ACTION SECTION
 local DEFAULT_URI = "/admins"
@@ -39,15 +47,17 @@ local function check_rails_admin(host, port, path)
 	if not http.response_contains(resp, "password") then
 		return false
 	end
-	return true
+	return resp
 end
 
 action = function(host, port)
-	local output = {}
 	local vuln_rails = check_rails_admin(host, port, DEFAULT_URI)
-
+  local output = {}
 	if not vuln_rails then
 		stdnse.print_debug(1,"%s: This does not look like a vulnerable Rails app", SCRIPT_NAME)
 		return
+  else
+    output = string.match(vuln_rails["body"], "%<td%>.*%<%/td%>")
 	end
+  return output
 end
