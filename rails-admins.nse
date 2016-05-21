@@ -17,16 +17,13 @@ author = "Peter Benjamin"
 -- PORT		STATE	SERVICE
 -- 3000/tcp	open	ppp
 -- | rails-admins:
--- | 
--- | 
+-- | <td>PeterBenjamin</td>
+-- | <td>MySuperSecr3t</td> 
 --
 
 -- Imports
 local http = require "http"
 local nmap = require "nmap"
-local shortport = require "shortport"
-
-local http = require "http"
 local stdnse = require "stdnse"
 
 -- RULE SECTION
